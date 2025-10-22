@@ -18,3 +18,45 @@ class User(db.Model):
 
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password_hash, password.encode('utf-8'))
+    
+    def __repr__(self):
+        return f"<User {self.username}>"
+    
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+        load_instance = False
+        exclude = ('_password_hash',)
+
+    username = auto_field(required=True)
+    email = auto_field(required=True)
+    password = fields.String(load_only=True, required=True)
+
+    @validates('username')
+    def validate_username(self, username, **kargs):
+        if len(username) < 2:
+            raise ValidationError("Username must be at least 2 characters long")
+        if not all(c.isalnum() or c.isspace() for c in username):
+            raise ValidationError("Username only contains numbers, letters and spaces")
+        
+    @validates('email')
+    def validate_email(self, email, **kargs):
+        if '@' not in email or '.' not in email:
+            raise ValidationError('Invalid email format')
+        if len(email) < 8:
+            raise ValidationError('Email must be at least 8 characters long')
+        
+    @post_load
+    def make_user(self, data, **kargs):
+        print('DEBUG make_user called with:', data)
+        if isinstance(data, dict):
+            password = data.pop('password', None)
+            print('DEBUG password extracted:', password)
+            if not password:
+                raise ValidationError('Password is required for registration')
+            user = User(**data)
+            user.set_password(password)
+            print('DEBUG user created:', user)
+            return user
+        return data
+        
