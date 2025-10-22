@@ -15,6 +15,7 @@ flask-restful = "*"
 faker = "*"
 ipdb = "*"
 flask-marshmallow = "*"
+marshmallow-sqlalchemy = "*"
 
 [dev-packages]
 
