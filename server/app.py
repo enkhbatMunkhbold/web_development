@@ -53,6 +53,32 @@ class Signup(Resource):
         
 api.add_resource(Signup, '/sign_up')
 
+class Login(Resource):
+    def post(self):
+        try:
+            data = request.json()
+            if not data or all(k in data for k in ['username', 'email', 'password']):
+                return {'error': 'Missing required fields: username, email and password are required'}, 400
+
+            user = User.query.filter_by(username=data['username']).first()
+
+            if not user:
+                return {'message': 'Invalid credentials'}, 401
+
+            if not user._password_hash:
+                return {'message': 'Invalid credentials'}, 401
+
+            if user.authenticate(data['password']):
+                session['user_id'] = user.id
+                return user_schema.dump(user), 200
+
+            return {'message': 'Invalid credentials'}, 401
+        
+        except Exception as e:
+            return {'error': str(e)}, 401
+
+api.add_resource(Login, 'login')
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
 
