@@ -12,6 +12,19 @@ app.route('/')
 def index():
     return '<h1>Project Server</h1>'
 
+class CheckSession(Resource):
+    def get(self):
+        user_id = session['user_id']
+        if user_id:
+            user = db.session.get(User, user_id)
+            if user:
+                user_data = user_schema.dump(user)
+                return user_data, 200
+            return {'error': "Not authenticated"}, 401
+        return {'error': 'Not authenticated'}, 401
+
+api.add_resource(CheckSession, 'check_session')
+
 class Signup(Resource):
     def post(self):
         try:
@@ -21,6 +34,24 @@ class Signup(Resource):
             
             if User.query.filter_by(username=data['username']).first():
                 return {'error': 'Username already exists'}, 400
+            
+            if User.query.filter_by(email=data['email']).first():
+                return {'error': 'Email already exists'}, 400
+            
+            new_user = user_schema.load(data)
+            db.session.add(new_user)
+            db.session.commit()
+
+            session['user_id'] = new_user.id
+            return user_schema.dump(new_user), 201
+        except ValidationError as ve:
+            return {'error': str(ve)}, 400
+        
+        except Exception as e:
+            print(f'Registration error: {str(e)}')
+            return {'error': f'An error occurred during registration {str(e)}'}, 500
+        
+api.add_resource(Signup, '/sign_up')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
