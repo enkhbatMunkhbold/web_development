@@ -23,7 +23,7 @@ class CheckSession(Resource):
             return {'error': "Not authenticated"}, 401
         return {'error': 'Not authenticated'}, 401
 
-api.add_resource(CheckSession, 'check_session')
+api.add_resource(CheckSession, '/check_session')
 
 class Signup(Resource):
     def post(self):
@@ -77,7 +77,14 @@ class Login(Resource):
         except Exception as e:
             return {'error': str(e)}, 401
 
-api.add_resource(Login, 'login')
+api.add_resource(Login, '/login')
+
+class Logout(Resource):
+    def delete(self):
+        session.pop('user_id', None)
+        return {}, 204
+    
+api.add_resource(Logout, '/logout')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
