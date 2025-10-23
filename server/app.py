@@ -8,7 +8,7 @@ from models import User, UserSchema
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
-app.route('/')
+@app.route('/')
 def index():
     return '<h1>Project Server</h1>'
 
@@ -44,6 +44,7 @@ class Signup(Resource):
 
             session['user_id'] = new_user.id
             return user_schema.dump(new_user), 201
+        
         except ValidationError as ve:
             return {'error': str(ve)}, 400
         
@@ -58,7 +59,7 @@ class Login(Resource):
         try:
             data = request.json()
             if not data or all(k in data for k in ['username', 'email', 'password']):
-                return {'error': 'Missing required fields: username, email and password are required'}, 400
+                return {'error': 'Missing required fields'}, 400
 
             user = User.query.filter_by(username=data['username']).first()
 
@@ -75,7 +76,7 @@ class Login(Resource):
             return {'message': 'Invalid credentials'}, 401
         
         except Exception as e:
-            return {'error': str(e)}, 401
+            return {'error': str(e)}, 500
 
 api.add_resource(Login, '/login')
 
