@@ -11,3 +11,28 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Global placeholder styling for all inputs and textareas */
+input::placeholder,
+textarea::placeholder {
+  color: rgba(148, 137, 121, 0.6) !important;
+  opacity: 1 !important;
+}
+
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: rgba(148, 137, 121, 0.6) !important;
+  opacity: 1 !important;
+}
+
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+  color: rgba(148, 137, 121, 0.6) !important;
+  opacity: 1 !important;
+}
+
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+  color: rgba(148, 137, 121, 0.6) !important;
+  opacity: 1 !important;
+}

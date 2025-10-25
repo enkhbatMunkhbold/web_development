@@ -14,7 +14,7 @@ def index():
 
 class CheckSession(Resource):
     def get(self):
-        user_id = session['user_id']
+        user_id = session.get('user_id')
         if user_id:
             user = db.session.get(User, user_id)
             if user:
@@ -28,7 +28,7 @@ api.add_resource(CheckSession, '/check_session')
 class Signup(Resource):
     def post(self):
         try:
-            data = request.json()
+            data = request.json
             if not data or not all(k in data for k in ['username', 'email', 'password']):
                 return {'error': 'Missing required fields: username, email and password are required'}, 400
             
@@ -52,13 +52,13 @@ class Signup(Resource):
             print(f'Registration error: {str(e)}')
             return {'error': f'An error occurred during registration {str(e)}'}, 500
         
-api.add_resource(Signup, '/sign_up')
+api.add_resource(Signup, '/signup')
 
 class Login(Resource):
     def post(self):
         try:
-            data = request.json()
-            if not data or all(k in data for k in ['username', 'email', 'password']):
+            data = request.json
+            if not data or not all(k in data for k in ['username', 'password']):
                 return {'error': 'Missing required fields'}, 400
 
             user = User.query.filter_by(username=data['username']).first()

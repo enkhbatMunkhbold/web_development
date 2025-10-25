@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom'
 import Home from './Home'
 import NavBar from './NavBar';
+import Login from './Login'
+import SignUp from './SignUp'
 import '../styling/App.css';
+import Profile from './Profile';
 
 function App() {
 
@@ -18,7 +21,8 @@ function App() {
           setUser(user)
           setIsLoading(false)
         })
-      } else if(r.status === 204){
+      } else if(r.status === 401 || r.status === 204){
+        // 401 means no session (user not logged in) - this is normal
         setUser(null)
         setIsLoading(false)
       } else {
@@ -40,10 +44,21 @@ function App() {
     <div className="App">
       <Router>
         <NavBar user={user} setUser={setUser}/>
-        <div>
+        <div className='main-content'>
           <Routes>
-            <Route path='/home' element={<Home />}/>
-            <Route path='*' element={<Navigate to="/login" replace />} />
+            {user ? (
+              <>
+                <Route path='/home' element={<Home user={user} setUser={setUser} />}/>
+                <Route path='/profile' element={<Profile user={user} setUser={setUser} />}/>
+                <Route path='*' element={<Navigate to="/home" replace />} />
+              </>
+            ) : (
+              <>
+                <Route path='/login' element={<Login user={user} setUser={setUser} />} />
+                <Route path='/signup' element={<SignUp user={user} setUser={setUser} />} />
+                <Route path='*' element={<Navigate to="/login" replace />} />
+              </>
+            )}
           </Routes>
         </div>
       </Router>

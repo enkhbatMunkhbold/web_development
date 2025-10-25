@@ -5,7 +5,7 @@ import '../styling/NavBar.css'
 const NavBar = ({ user, setUser }) => {
 
     const [ profile, setProfile ] = useState(true)
-    const [ navigate ] = useNavigate()
+    const navigate = useNavigate()
 
     const handleHome = () => {
         setProfile(!profile)
@@ -27,19 +27,22 @@ const NavBar = ({ user, setUser }) => {
     }
 
   return (
-    <div className='navbar'>
+    <nav className='navbar'>
         <h1>Web Development</h1>
-        {user && (
-            <div className='nav-buttons'>
-                <button className='nav-button home-button' onClick={handleHome}>
-                    {profile ? "Profile" : "Home"}
-                </button>
-                <button className='nav-button signout-button' onClick={handleSignOut}>
-                    Sign Out
-                </button>
-            </div>
-        )}
-    </div>
+        <div className='nav-buttons'>
+            {user && (
+                <>
+                    <button className='nav-button home-button' onClick={handleHome}>
+                        {profile ? "Profile" : "Home"}
+                    </button>
+                    <button className='nav-button signout-button' onClick={handleSignOut}>
+                        Sign Out
+                    </button>
+                </>
+            )}
+        </div>
+        <hr className='navbar-divider'/>
+    </nav>
   )
 }
 
